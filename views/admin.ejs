@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Page</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400..700&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: #b8d9d3;
+        display: flex;
+        flex-direction: column;
+        scroll-behavior: smooth;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        font-family: "Kode Mono", monospace;
+      }
+      h1.welcome {
+        margin-top: 20px;
+        opacity: 0;
+        animation: fadeIn 2s ease-in-out forwards;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 80%;
+        flex-grow: 1;
+        margin: 20px auto;
+      }
+
+      /* User List Styles */
+      .user_list {
+        width: 100%;
+        margin-top: 20px;
+      }
+
+      .user_list h2 {
+        margin-bottom: 10px;
+      }
+
+      .user_list ul {
+        list-style: none;
+        padding: 10px;
+        text-align: center;
+        border: 2px solid #025e73;
+        border-radius: 5px;
+      }
+
+      .delete {
+        text-decoration: none;
+        position: relative;
+        color: black;
+        margin: 5px;
+        margin-bottom: 10px;
+        transition: 0.3s ease-out;
+      }
+
+      .delete:hover {
+        color: red;
+      }
+
+      /* Book Section Styles */
+      .book {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .book_add {
+        width: 80%;
+        margin-bottom: 20px;
+      }
+
+      .book_add form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .book_add input {
+        width: 100%;
+        height: 35px;
+        color: #025e73;
+        border: none;
+        margin-bottom: 10px;
+        outline: none;
+        background: transparent;
+        border-bottom: 2px solid #025e73;
+      }
+
+      .book_add button {
+        width: 100%;
+      }
+
+      .book_list {
+        width: 80%;
+      }
+
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      .table th,
+      .table td {
+        padding: 10px;
+        text-align: center;
+        border: 1px solid #025e73;
+      }
+
+      .table th {
+        background-color: #025e73;
+        color: white;
+      }
+
+      .title,
+      .author,
+      .genre {
+        width: 33.33%;
+      }
+
+      .update,
+      .delete {
+        text-decoration: none;
+        position: relative;
+        color: black;
+        margin: 5px;
+        margin-bottom: 10px;
+        transition: 0.3s ease-out;
+      }
+
+      .update:hover {
+        color: greenyellow;
+      }
+
+      /* Modal Styles */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 20px;
+        z-index: 1;
+      }
+      .addBtn {
+        background: #025e73;
+        color: white;
+        font-size: 16px;
+        justify-content: center;
+        position: relative;
+        align-items: center;
+        margin: 0 auto;
+        border: none;
+        outline: none;
+        font-family: "Kode Mono", monospace;
+        height: 40px;
+        border-radius: 8px;
+        width: 250px;
+        transition: 0.4s ease-in;
+      }
+      .addBtn:hover {
+        transform: scale(0.98);
+      }
+
+      footer{
+        text-align: center;
+  padding-top: 30px;
+  height: 70px;
+  background: snow;
+  font-family: "Kode Mono", monospace;
+  width: 100%;
+  flex-shrink: 0;
+  margin-top: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="welcome">Hello, <%= username %>!</h1>
+
+    <section>
+      <div class="user_list">
+        <h2>User List:</h2>
+        <ul>
+          <% users.forEach(user => { %>
+          <li>
+            <%= user.username %>
+            <a href="/deleteuser/<%= user._id %>" class="delete">
+              &#9668; Delete User</a
+            >
+          </li>
+          <% }); %>
+        </ul>
+      </div>
+
+      <div class="book">
+        <div class="book_add">
+          <form action="/addbook" method="post">
+            <input
+              type="text"
+              id="title"
+              name="title"
+              placeholder="TITLE"
+              required
+            />
+            <input
+              type="text"
+              id="author"
+              name="author"
+              placeholder="AUTHOR"
+              required
+            />
+            <input
+              type="text"
+              id="genre"
+              name="genre"
+              placeholder="GENRE"
+              required
+            />
+            <button type="submit" class="addBtn">Add Book</button>
+          </form>
+        </div>
+</div>
+</section>
+<section>
+        <div class="book_list">
+          <h2>Existing Books</h2>
+          <table class="table">
+            <thead class="names">
+              <tr class="names">
+                <th class="title">Title</th>
+                <th class="author">Author</th>
+                <th class="genre">Genre</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% books.forEach(book => { %>
+              <tr>
+                <td class="title"><%= book.title %></td>
+                <td class="author"><%= book.author %></td>
+                <td class="genre"><%= book.genre %></td>
+                <td>
+                  <a
+                    href="#"
+                    onclick="openUpdateModal('<%= book._id %>')"
+                    class="update"
+                  >
+                    &#9998; Update</a
+                  >
+                  <a href="/deletebook/<%= book._id %>" class="delete">
+                    &#9668; Delete</a
+                  >
+                </td>
+              </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+
+        <div id="updateModal" class="modal">
+          <h2>Update Book Details</h2>
+          <form id="updateForm" action="" method="post">
+            <input
+              type="text"
+              id="updateTitle"
+              name="title"
+              placeholder="New Title"
+              required
+            />
+            <input
+              type="text"
+              id="updateAuthor"
+              name="author"
+              placeholder="New Author"
+              required
+            />
+            <input
+              type="text"
+              id="updateGenre"
+              name="genre"
+              placeholder="New Genre"
+              required
+            />
+            <button type="submit" class="addBtn">Update Book</button>
+          </form>
+          <button onclick="closeUpdateModal()" class="addBtn">Close</button>
+        </div>
+      </div>
+</section>
+
+<footer>
+  <p>Kunanbayev Arnur &nbsp; IT-2202</p>
+</footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        document.querySelector(".welcome").style.opacity = "1";
+      });
+      function openUpdateModal(bookId) {
+        fetch(`/getbook/${bookId}`)
+          .then((response) => response.json())
+          .then((book) => {
+            document.getElementById("updateTitle").value = book.title;
+            document.getElementById("updateAuthor").value = book.author;
+            document.getElementById("updateGenre").value = book.genre;
+            document.getElementById(
+              "updateForm"
+            ).action = `/updatebook/${bookId}`;
+
+            // Display the modal
+            document.getElementById("updateModal").style.display = "block";
+          })
+          .catch((error) =>
+            console.error("Error fetching book details:", error)
+          );
+      }
+      function closeUpdateModal() {
+        document.getElementById("updateModal").style.display = "none";
+      }
+    </script>
+  </body>
+</html>
